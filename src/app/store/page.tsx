@@ -1,9 +1,92 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { ShoppingBag, Download, Mail } from "lucide-react";
 import { products } from "@/data/store";
 import FadeIn from "@/components/FadeIn";
 import SectionHeading from "@/components/SectionHeading";
+
+function FreeDownloadButton() {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "free_download" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        setMessage(data.error || "Something went wrong.");
+        return;
+      }
+      setStatus("success");
+      setMessage("Check your email for the download link!");
+      setEmail("");
+    } catch {
+      setStatus("error");
+      setMessage("Something went wrong. Please try again.");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="w-full text-center">
+        <p className="text-green-400 text-sm font-medium py-3">
+          <Download size={16} className="inline mr-2" />
+          {message}
+        </p>
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => {
+          setOpen(true);
+          setTimeout(() => inputRef.current?.focus(), 0);
+        }}
+        className="w-full flex items-center justify-center gap-2 bg-accent-cyan hover:bg-accent-cyan/80 text-white py-3 rounded-full font-medium transition-colors"
+      >
+        <Mail size={18} /> Free Download with Email
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full space-y-3">
+      <input
+        ref={inputRef}
+        type="email"
+        placeholder="your@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full bg-surface border border-border rounded-full px-6 py-3 text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors text-sm"
+        required
+        disabled={status === "loading"}
+      />
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full flex items-center justify-center gap-2 bg-accent-cyan hover:bg-accent-cyan/80 text-white py-3 rounded-full font-medium transition-colors disabled:opacity-50"
+      >
+        <Download size={18} /> {status === "loading" ? "Submitting…" : "Get Free Download"}
+      </button>
+      {status === "error" && (
+        <p className="text-red-400 text-xs text-center">{message}</p>
+      )}
+    </form>
+  );
+}
 
 export default function StorePage() {
   async function handleBuy(productId: string) {
@@ -83,20 +166,7 @@ export default function StorePage() {
                         Buy Now &mdash; &pound;{product.price.toFixed(2)}
                       </button>
                     ) : (
-                      <button
-                        onClick={(e) => e.preventDefault()}
-                        className="w-full flex items-center justify-center gap-2 bg-accent-cyan hover:bg-accent-cyan/80 text-white py-3 rounded-full font-medium transition-colors"
-                      >
-                        {product.price === 0 ? (
-                          <>
-                            <Mail size={18} /> Free Download with Email
-                          </>
-                        ) : (
-                          <>
-                            <Download size={18} /> Download
-                          </>
-                        )}
-                      </button>
+                      <FreeDownloadButton />
                     )}
                   </div>
                 </div>

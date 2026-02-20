@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, ExternalLink } from "lucide-react";
 import FadeIn from "@/components/FadeIn";
 import SectionHeading from "@/components/SectionHeading";
+import SubscribeForm from "@/components/SubscribeForm";
 
 interface UpcomingRelease {
   title: string;
@@ -63,6 +64,85 @@ function Countdown({ targetDate }: { targetDate: string }) {
   );
 }
 
+function NotifyButton() {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "upcoming" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus("error");
+        setMessage(data.error || "Something went wrong.");
+        return;
+      }
+      setStatus("success");
+      setMessage("You'll be notified!");
+      setEmail("");
+    } catch {
+      setStatus("error");
+      setMessage("Something went wrong. Please try again.");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <span className="flex items-center gap-2 text-green-400 text-sm font-medium px-6 py-3">
+        <Bell size={16} /> {message}
+      </span>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => {
+          setOpen(true);
+          setTimeout(() => inputRef.current?.focus(), 0);
+        }}
+        className="flex items-center gap-2 border border-border hover:border-accent text-foreground px-6 py-3 rounded-full text-sm font-medium transition-colors"
+      >
+        <Bell size={16} /> Notify Me
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      <input
+        ref={inputRef}
+        type="email"
+        placeholder="your@email.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="bg-surface border border-border rounded-full px-4 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+        required
+        disabled={status === "loading"}
+      />
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="flex items-center gap-2 bg-accent hover:bg-accent/80 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors disabled:opacity-50"
+      >
+        <Bell size={16} /> {status === "loading" ? "…" : "Notify"}
+      </button>
+      {status === "error" && (
+        <span className="text-red-400 text-xs">{message}</span>
+      )}
+    </form>
+  );
+}
+
 export default function UpcomingPage() {
   return (
     <section className="py-24 px-6">
@@ -107,12 +187,7 @@ export default function UpcomingPage() {
                         <ExternalLink size={16} /> Pre-Save
                       </a>
                     )}
-                    <button
-                      onClick={(e) => e.preventDefault()}
-                      className="flex items-center gap-2 border border-border hover:border-accent text-foreground px-6 py-3 rounded-full text-sm font-medium transition-colors"
-                    >
-                      <Bell size={16} /> Notify Me
-                    </button>
+                    <NotifyButton />
                   </div>
                 </div>
               </div>
@@ -125,23 +200,7 @@ export default function UpcomingPage() {
           <div className="mt-16 text-center">
             <h3 className="font-heading text-2xl font-bold">Get notified when it drops</h3>
             <p className="text-muted mt-2">Join the mailing list for early access and exclusives.</p>
-            <form
-              className="mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="flex-1 bg-surface border border-border rounded-full px-6 py-3 text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-accent hover:bg-accent/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
+            <SubscribeForm source="upcoming" />
           </div>
         </FadeIn>
       </div>
