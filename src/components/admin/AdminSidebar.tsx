@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Calendar, Users, ArrowLeft, LogOut } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Search, ArrowLeft, LogOut } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/dashboard/shows", label: "Shows", icon: Calendar },
   { href: "/admin/dashboard/subscribers", label: "Subscribers", icon: Users },
+  { href: "/admin/dashboard/opportunities", label: "Opportunities", icon: Search },
 ];
 
 export default function AdminSidebar() {
