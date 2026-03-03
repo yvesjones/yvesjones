@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Send, Instagram, Twitter, Youtube, Music } from "lucide-react";
 import FadeIn from "@/components/FadeIn";
 import SectionHeading from "@/components/SectionHeading";
@@ -13,11 +14,39 @@ const socials = [
 ];
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const searchParams = useSearchParams();
 
-  function handleSubmit(e: React.FormEvent) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [type, setType] = useState(searchParams.get("type") || "general");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setStatus("loading");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, type, subject, message }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMessage(data.error || "Something went wrong.");
+        return;
+      }
+
+      setStatus("success");
+    } catch {
+      setStatus("error");
+      setErrorMessage("Something went wrong. Please try again.");
+    }
   }
 
   return (
@@ -28,7 +57,7 @@ export default function ContactPage() {
           subtitle="Booking enquiries, press requests, and general messages."
         />
 
-        {submitted ? (
+        {status === "success" ? (
           <FadeIn>
             <div className="text-center py-16">
               <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -48,8 +77,11 @@ export default function ContactPage() {
                     id="name"
                     type="text"
                     required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
                     placeholder="Your name"
+                    disabled={status === "loading"}
                   />
                 </div>
                 <div>
@@ -58,8 +90,11 @@ export default function ContactPage() {
                     id="email"
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
                     placeholder="your@email.com"
+                    disabled={status === "loading"}
                   />
                 </div>
               </div>
@@ -68,7 +103,10 @@ export default function ContactPage() {
                 <label htmlFor="type" className="block text-sm text-muted mb-2">Enquiry Type</label>
                 <select
                   id="type"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
                   className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-accent transition-colors"
+                  disabled={status === "loading"}
                 >
                   <option value="booking">Booking Enquiry</option>
                   <option value="press">Press / Media</option>
@@ -83,8 +121,11 @@ export default function ContactPage() {
                   id="subject"
                   type="text"
                   required
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
                   className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors"
                   placeholder="What's this about?"
+                  disabled={status === "loading"}
                 />
               </div>
 
@@ -94,16 +135,25 @@ export default function ContactPage() {
                   id="message"
                   rows={6}
                   required
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent transition-colors resize-none"
                   placeholder="Your message..."
+                  disabled={status === "loading"}
                 />
               </div>
 
+              {status === "error" && (
+                <p className="text-sm text-red-400">{errorMessage}</p>
+              )}
+
               <button
                 type="submit"
-                className="flex items-center gap-2 bg-accent hover:bg-accent/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
+                disabled={status === "loading"}
+                className="flex items-center gap-2 bg-accent hover:bg-accent/80 text-white px-8 py-3 rounded-full font-medium transition-colors disabled:opacity-50"
               >
-                <Send size={18} /> Send Message
+                <Send size={18} />
+                {status === "loading" ? "Sending…" : "Send Message"}
               </button>
             </form>
           </FadeIn>

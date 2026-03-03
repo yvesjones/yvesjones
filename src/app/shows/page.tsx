@@ -20,7 +20,7 @@ export default async function ShowsPage() {
             <h3 className="font-heading text-xl font-bold">Want to book Yves Jones?</h3>
             <p className="text-muted mt-2">For booking enquiries, get in touch.</p>
             <a
-              href="/contact"
+              href="/contact?type=booking"
               className="mt-6 inline-flex items-center gap-2 bg-accent hover:bg-accent/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
             >
               Contact for Booking
