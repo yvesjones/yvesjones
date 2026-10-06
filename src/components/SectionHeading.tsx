@@ -3,17 +3,16 @@ import FadeIn from "./FadeIn";
 interface SectionHeadingProps {
   title: string;
   subtitle?: string;
+  /** Monospace eyebrow above the title, e.g. "LATEST RELEASE". */
+  eyebrow?: string;
 }
 
-export default function SectionHeading({ title, subtitle }: SectionHeadingProps) {
+export default function SectionHeading({ title, subtitle, eyebrow }: SectionHeadingProps) {
   return (
     <FadeIn className="mb-12">
-      <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight">
-        {title}
-      </h2>
-      {subtitle && (
-        <p className="mt-3 text-muted text-lg">{subtitle}</p>
-      )}
+      {eyebrow && <p className="mono-eyebrow mb-4">{eyebrow}</p>}
+      <h2 className="display display-lg">{title}</h2>
+      {subtitle && <p className="mono mt-4 text-sm text-muted">{subtitle}</p>}
     </FadeIn>
   );
 }

@@ -20,22 +20,22 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md hairline-b">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
         <Link
           href="/"
-          className="font-heading text-xl font-bold tracking-tight text-foreground hover:text-accent transition-colors"
+          className="display text-xl text-foreground hover:text-accent transition-colors"
         >
           YVES JONES
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-7">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-muted hover:text-foreground transition-colors"
+              className="mono-label hover:text-foreground transition-colors"
             >
               {link.label}
             </Link>
@@ -59,7 +59,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b border-border overflow-hidden"
+            className="md:hidden bg-background hairline-b overflow-hidden"
           >
             <div className="px-6 py-4 flex flex-col gap-4">
               {links.map((link) => (
@@ -67,7 +67,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="text-lg text-muted hover:text-foreground transition-colors"
+                  className="mono-label !text-sm hover:text-foreground transition-colors"
                 >
                   {link.label}
                 </Link>

@@ -51,14 +51,14 @@ export default function SubscribeForm({ source }: SubscribeFormProps) {
           setEmail(e.target.value);
           if (status !== "idle" && status !== "loading") setStatus("idle");
         }}
-        className="flex-1 bg-surface border border-border rounded-full px-6 py-3 text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
+        className="flex-1 mono bg-surface hairline border rounded-full px-6 py-3 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
         required
         disabled={status === "loading"}
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="bg-accent hover:bg-accent/80 text-white px-8 py-3 rounded-full font-medium transition-colors disabled:opacity-50"
+        className="pill pill-primary disabled:opacity-50"
       >
         {status === "loading" ? "Subscribing…" : "Subscribe"}
       </button>

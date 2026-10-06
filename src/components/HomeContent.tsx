@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, Play, Calendar, ShoppingBag } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import FadeIn from "@/components/FadeIn";
 import SpotifySection from "@/components/SpotifySection";
 import SubscribeForm from "@/components/SubscribeForm";
-import { getFeaturedRelease } from "@/data/releases";
+import HalideLanding from "@/components/ui/demo";
+import { getFeaturedRelease, releaseCredit } from "@/data/releases";
 import type { Show } from "@/data/shows";
 
 export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
@@ -15,60 +15,7 @@ export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent/10 via-background to-background" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-accent)_0%,_transparent_50%)] opacity-20" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <p className="text-accent text-sm uppercase tracking-[0.3em] mb-6">
-              Hip-Hop / Rap & Electronic Dance
-            </p>
-            <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-none">
-              YVES
-              <br />
-              <span className="neon-glow">JONES</span>
-            </h1>
-            <p className="mt-8 text-muted text-lg md:text-xl max-w-xl mx-auto">
-              Producer. Performer. Pushing the boundaries between underground rap and electronic dance music.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="/music"
-              className="flex items-center gap-2 bg-accent hover:bg-accent/80 text-white px-8 py-3 rounded-full font-medium transition-colors"
-            >
-              <Play size={18} /> Listen Now
-            </Link>
-            <Link
-              href="/store"
-              className="flex items-center gap-2 border border-border hover:border-foreground text-foreground px-8 py-3 rounded-full font-medium transition-colors"
-            >
-              <ShoppingBag size={18} /> Buy Mixtapes
-            </Link>
-          </motion.div>
-        </div>
-
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
-          <div className="w-5 h-8 border-2 border-muted rounded-full flex items-start justify-center p-1">
-            <div className="w-1 h-2 bg-muted rounded-full" />
-          </div>
-        </motion.div>
-      </section>
+      <HalideLanding />
 
       <SpotifySection />
 
@@ -76,15 +23,23 @@ export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
         <section className="py-24 px-6">
           <div className="max-w-7xl mx-auto">
             <FadeIn>
-              <p className="text-accent text-sm uppercase tracking-[0.2em] mb-4">Latest Release</p>
+              <p className="mono-eyebrow mb-4">Latest Release</p>
             </FadeIn>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <FadeIn direction="left">
                 <div className="aspect-square bg-surface-light rounded-2xl overflow-hidden relative group">
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10" />
-                  <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
-                    <span className="font-heading text-2xl text-foreground/60">{featured.title}</span>
-                  </div>
+                  {featured.artwork.startsWith("http") ? (
+                    <img
+                      src={featured.artwork}
+                      alt={featured.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                      <span className="display display-md text-foreground/60">{featured.title}</span>
+                    </div>
+                  )}
                   <div className="absolute bottom-6 left-6 z-20">
                     <div className="flex gap-2">
                       {featured.genre.map((g) => (
@@ -97,13 +52,15 @@ export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
                 </div>
               </FadeIn>
               <FadeIn direction="right" delay={0.2}>
-                <h3 className="font-heading text-4xl md:text-5xl font-bold">{featured.title}</h3>
-                <p className="mt-2 text-muted text-sm">
+                <h3 className="display display-lg">{featured.title}</h3>
+                <p className="mono-readout mt-3">{releaseCredit(featured)}</p>
+                <p className="mono-label mt-2">
                   {featured.type.toUpperCase()} &middot; {new Date(featured.releaseDate).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" })}
                 </p>
                 <p className="mt-6 text-muted leading-relaxed">{featured.description}</p>
                 <div className="mt-4 text-sm text-muted">
-                  {featured.tracklist.length} tracks
+                  {featured.tracklist.length}{" "}
+                  {featured.tracklist.length === 1 ? "track" : "tracks"}
                 </div>
                 <Link
                   href={`/music/${featured.slug}`}
@@ -121,11 +78,11 @@ export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
         <section className="py-24 px-6 bg-surface">
           <div className="max-w-7xl mx-auto">
             <FadeIn>
-              <p className="text-accent text-sm uppercase tracking-[0.2em] mb-4">Next Show</p>
+              <p className="mono-eyebrow mb-4">Next Show</p>
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                  <h3 className="font-heading text-4xl md:text-5xl font-bold">{nextShow.venue}</h3>
-                  <p className="mt-2 text-muted text-lg">
+                  <h3 className="display display-lg">{nextShow.venue}</h3>
+                  <p className="mono-label mt-3">
                     {nextShow.city}, {nextShow.country} &middot;{" "}
                     {new Date(nextShow.date).toLocaleDateString("en-GB", {
                       weekday: "long",
@@ -135,21 +92,21 @@ export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
                     })}
                   </p>
                   {nextShow.ticketPrice && (
-                    <p className="mt-1 text-accent font-medium">{nextShow.ticketPrice}</p>
+                    <p className="mono-readout mt-2">{nextShow.ticketPrice}</p>
                   )}
                 </div>
                 <div className="flex gap-4">
                   {nextShow.ticketUrl && (
                     <a
                       href={nextShow.ticketUrl}
-                      className="flex items-center gap-2 bg-accent hover:bg-accent/80 text-white px-6 py-3 rounded-full font-medium transition-colors"
+                      className="pill pill-primary"
                     >
                       <Calendar size={18} /> Get Tickets
                     </a>
                   )}
                   <Link
                     href="/shows"
-                    className="flex items-center gap-2 border border-border hover:border-foreground text-foreground px-6 py-3 rounded-full font-medium transition-colors"
+                    className="pill pill-secondary"
                   >
                     All Shows <ArrowRight size={18} />
                   </Link>
@@ -163,7 +120,7 @@ export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <FadeIn>
-            <h3 className="font-heading text-3xl md:text-4xl font-bold">
+            <h3 className="display display-lg">
               Stay in the loop
             </h3>
             <p className="mt-4 text-muted">
