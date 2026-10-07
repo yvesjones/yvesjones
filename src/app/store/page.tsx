@@ -108,7 +108,7 @@ export default function StorePage() {
   return (
     <>
       <PageHero
-        index="04"
+        index="03"
         label="STORE"
         title="Store"
         subtitle="Exclusive mixtapes and downloads. Direct from the artist."

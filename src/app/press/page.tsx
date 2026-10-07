@@ -104,7 +104,7 @@ export default function PressPage() {
   return (
     <>
       <PageHero
-        index="06"
+        index="05"
         label="PRESS"
         title="Press"
         subtitle="Press shots, media kit, and coverage."

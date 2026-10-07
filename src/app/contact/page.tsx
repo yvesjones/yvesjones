@@ -181,7 +181,7 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        index="07"
+        index="06"
         label="CONTACT"
         title="Contact"
         subtitle="Booking enquiries, press requests, and general messages."

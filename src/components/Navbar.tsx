@@ -9,7 +9,6 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/music", label: "Music" },
   { href: "/about", label: "About" },
-  { href: "/upcoming", label: "Upcoming" },
   { href: "/store", label: "Store" },
   { href: "/shows", label: "Shows" },
   { href: "/press", label: "Press" },

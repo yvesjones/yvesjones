@@ -11,7 +11,7 @@ export default async function ShowsPage() {
   return (
     <>
       <PageHero
-        index="05"
+        index="04"
         label="SHOWS"
         title="Shows"
         subtitle="Catch Yves Jones live."
