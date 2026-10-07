@@ -4,20 +4,7 @@ import { useState } from "react";
 import { Instagram, Twitter, Youtube, Music, Copy, Check } from "lucide-react";
 import FadeIn from "@/components/FadeIn";
 import PageHero from "@/components/PageHero";
-
-const shortBio =
-  "Yves Jones is a London-based Hip-Hop/Rap and Electronic Dance artist known for fusing raw, street-level energy with futuristic dance production. With releases spanning UK Drill, Trap, House, and Drum & Bass, Yves has performed at venues across the UK and Europe including Fabric, Printworks, and Berghain. His genre-defying sound has garnered attention from leading publications and playlist curators alike.";
-
-const timeline = [
-  { year: "2021", event: "First SoundCloud upload breaks 10K plays" },
-  { year: "2022", event: "Debut EP 'First Light' released on all platforms" },
-  { year: "2023", event: "First headline show at XOYO, London (sold out)" },
-  { year: "2023", event: "Collaboration with MC Vex on 'Bassweight'" },
-  { year: "2024", event: "'First Light' single surpasses 500K streams" },
-  { year: "2024", event: "Festival appearances: Warehouse Project, Motion" },
-  { year: "2025", event: "Debut album 'Midnight Frequency' drops to critical acclaim" },
-  { year: "2025", event: "UK & Europe tour announced: Fabric, Berghain, Sub Club" },
-];
+import { bioParagraphs, shortBio } from "@/data/bio";
 
 const socials = [
   { name: "Instagram", icon: Instagram, url: "#" },
@@ -42,7 +29,7 @@ export default function AboutPage() {
         label="ABOUT"
         title="About"
         subtitle="The story so far."
-        readout={["ORIGIN: SOUTH LONDON", "ACTIVE SINCE: 2021"]}
+        readout={["ORIGIN: MANCHESTER", "1/2 OF FIEVES"]}
       />
 
       <section className="py-20 px-6">
@@ -50,27 +37,14 @@ export default function AboutPage() {
           {/* Long-form bio */}
           <FadeIn>
             <div className="prose prose-invert max-w-none">
-              <p className="text-lg text-muted leading-relaxed">
-                Born and raised in South London, Yves Jones grew up between two worlds: the gritty, lyric-driven culture of UK rap and the pulsating energy of electronic dance music heard in the city&apos;s underground clubs. This duality would come to define his sound.
-              </p>
-              <p className="text-lg text-muted leading-relaxed mt-6">
-                What started as bedroom productions on a cracked copy of FL Studio quickly evolved into a serious pursuit. By 2021, his early SoundCloud uploads were catching the attention of tastemakers, blending the 808-heavy knock of trap with the rolling basslines of drum &amp; bass and the four-to-the-floor pulse of house music.
-              </p>
-
-              {/* Pull quote */}
-              <blockquote className="my-12 border-l-4 border-accent pl-6 py-2">
-                <p className="text-2xl display display-case text-foreground italic">
-                  &ldquo;I don&apos;t see genres as walls. They&apos;re more like colours on a palette. The magic happens when you mix them.&rdquo;
+              {bioParagraphs.map((para, i) => (
+                <p
+                  key={i}
+                  className={`text-lg text-muted leading-relaxed ${i > 0 ? "mt-6" : ""}`}
+                >
+                  {para}
                 </p>
-                <cite className="text-muted text-sm mt-2 block not-italic">— Yves Jones</cite>
-              </blockquote>
-
-              <p className="text-lg text-muted leading-relaxed">
-                His debut album, &ldquo;Midnight Frequency,&rdquo; dropped in late 2025 to critical acclaim, weaving together 12 tracks that move from dark, introspective trap to euphoric, dancefloor-ready house. The album cemented his reputation as one of the UK&apos;s most exciting genre-bending artists.
-              </p>
-              <p className="text-lg text-muted leading-relaxed mt-6">
-                Now a regular on the live circuit with headline shows at iconic venues like Fabric, Printworks, and XOYO, Yves brings the same genre-fluid energy to the stage — delivering sets that are part rap performance, part DJ set, and entirely his own.
-              </p>
+              ))}
             </div>
           </FadeIn>
 
@@ -91,30 +65,8 @@ export default function AboutPage() {
             </div>
           </FadeIn>
 
-          {/* Timeline */}
-          <FadeIn delay={0.2}>
-            <div className="mt-16">
-              <h3 className="display display-md mb-8">Timeline</h3>
-              <div className="space-y-6">
-                {timeline.map((item, i) => (
-                  <div key={i} className="flex gap-6 items-start group">
-                    <div className="shrink-0 w-16">
-                      <span className="text-accent display">{item.year}</span>
-                    </div>
-                    <div className="relative pl-6 hairline-l group-hover:border-accent transition-colors">
-                      <div className="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-border group-hover:bg-accent transition-colors" />
-                      <p className="text-muted group-hover:text-foreground transition-colors">
-                        {item.event}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-
           {/* Social Links */}
-          <FadeIn delay={0.3}>
+          <FadeIn delay={0.2}>
             <div className="mt-16">
               <h3 className="display display-md mb-6">Connect</h3>
               <div className="flex flex-wrap gap-4">

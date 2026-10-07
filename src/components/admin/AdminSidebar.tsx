@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Calendar, Users, Search, ArrowLeft, LogOut } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, Search, BarChart3, ArrowLeft, LogOut } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/dashboard/shows", label: "Shows", icon: Calendar },
   { href: "/admin/dashboard/subscribers", label: "Subscribers", icon: Users },
   { href: "/admin/dashboard/opportunities", label: "Opportunities", icon: Search },
+  { href: "/admin/dashboard/stats", label: "Press Stats", icon: BarChart3 },
 ];
 
 export default function AdminSidebar() {

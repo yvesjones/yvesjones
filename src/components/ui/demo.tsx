@@ -4,6 +4,11 @@ import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Play, ShoppingBag } from "lucide-react";
 
+/** Z distance between the stacked plates. Also set as each layer's resting
+ *  transform in CSS — without that the stack sits flat until the first
+ *  mousemove, which is what made the hero read as 2D on load. */
+const LAYER_GAP_PX = 45;
+
 const HalideLanding: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const layersRef = useRef<HTMLDivElement[]>([]);
@@ -23,9 +28,9 @@ const HalideLanding: React.FC = () => {
       // Apply depth shift to layers
       layersRef.current.forEach((layer, index) => {
         if (!layer) return;
-        const depth = (index + 1) * 15;
-        const moveX = x * (index + 1) * 0.2;
-        const moveY = y * (index + 1) * 0.2;
+        const depth = (index + 1) * LAYER_GAP_PX;
+        const moveX = x * (index + 1) * 0.5;
+        const moveY = y * (index + 1) * 0.5;
         layer.style.transform = `translateZ(${depth}px) translate(${moveX}px, ${moveY}px)`;
       });
     };
@@ -66,7 +71,7 @@ const HalideLanding: React.FC = () => {
         }
 
         .viewport {
-          perspective: 2000px;
+          perspective: 1100px;
           width: 100vw;
           height: 100vh;
           display: flex;
@@ -92,20 +97,31 @@ const HalideLanding: React.FC = () => {
           transition: transform 0.5s ease;
         }
 
+        /* Own photographs, composited the way the original stacked three
+           stock frames. The venue shot is the base because it carries the
+           subject; water and woodland are texture passes.
+
+           Brightness runs above 1 here: the base is a dark room lit by stage
+           wash, and red/orange carries little luminance, so grayscale() leaves
+           these far darker than the daylight stock they replaced. */
         .halide-layer-1 {
-          background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200');
-          filter: grayscale(1) contrast(1.2) brightness(0.5);
+          transform: translateZ(45px);
+          box-shadow: 0 40px 90px rgba(0, 0, 0, 0.9);
+          background-image: url('/hero-venue.jpg');
+          filter: grayscale(1) contrast(1.15) brightness(1.5);
         }
         .halide-layer-2 {
-          background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200');
-          filter: grayscale(1) contrast(1.1) brightness(0.7);
-          opacity: 0.6;
+          transform: translateZ(90px);
+          background-image: url('/hero-water.jpg');
+          filter: grayscale(1) contrast(1.2) brightness(0.5);
+          opacity: 0.22;
           mix-blend-mode: screen;
         }
         .halide-layer-3 {
-          background-image: url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=1200');
-          filter: grayscale(1) contrast(1.3) brightness(0.8);
-          opacity: 0.4;
+          transform: translateZ(135px);
+          background-image: url('/hero-wood.jpg');
+          filter: grayscale(1) contrast(1.15) brightness(0.85);
+          opacity: 0.22;
           mix-blend-mode: overlay;
         }
 
@@ -122,7 +138,7 @@ const HalideLanding: React.FC = () => {
             rgba(255, 255, 255, 0.05) 41px,
             transparent 42px
           );
-          transform: translateZ(120px);
+          transform: translateZ(230px);
           pointer-events: none;
         }
 

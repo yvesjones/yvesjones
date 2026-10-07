@@ -1,37 +1,99 @@
 "use client";
 
 import { Download, Copy, Check, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FadeIn from "@/components/FadeIn";
 import PageHero from "@/components/PageHero";
+import { shortBio } from "@/data/bio";
+import { defaultStats, statFields, type PressStats } from "@/data/stats";
 
+/** Real press shots, served from /public/press. */
 const pressShots = [
-  { id: 1, label: "Studio Portrait", aspect: "portrait" },
-  { id: 2, label: "Live Performance", aspect: "landscape" },
-  { id: 3, label: "Press Headshot", aspect: "square" },
-  { id: 4, label: "Festival Stage", aspect: "landscape" },
-  { id: 5, label: "Studio Session", aspect: "portrait" },
-  { id: 6, label: "Promo Shot", aspect: "square" },
+  { src: "/press/press-1.jpg", label: "Live", aspect: "landscape" },
+  { src: "/press/press-2.jpg", label: "Portrait", aspect: "portrait" },
+  { src: "/press/press-3.jpg", label: "Portrait", aspect: "landscape" },
+  { src: "/press/press-4.jpg", label: "Portrait", aspect: "portrait" },
+  { src: "/press/press-5.jpg", label: "Portrait", aspect: "portrait" },
+  { src: "/press/press-6.jpg", label: "Fieves", aspect: "landscape" },
+  { src: "/press/press-7.jpg", label: "Film", aspect: "landscape" },
+  { src: "/press/press-8.jpg", label: "Portrait", aspect: "portrait" },
+  { src: "/press/press-9.jpg", label: "Live", aspect: "landscape" },
 ];
 
-const shortBio =
-  "Yves Jones is a London-based Hip-Hop/Rap and Electronic Dance artist known for fusing raw, street-level energy with futuristic dance production. With releases spanning UK Drill, Trap, House, and Drum & Bass, Yves has performed at venues across the UK and Europe including Fabric, Printworks, and Berghain.";
-
-const stats = [
-  { label: "Monthly Listeners", value: "50K+" },
-  { label: "Total Streams", value: "2M+" },
-  { label: "Social Following", value: "25K+" },
-  { label: "Live Shows", value: "80+" },
-];
-
+/**
+ * Press coverage, each verified by reading the article. Entries carrying a
+ * `credit` cover a track Yves produced but do not name him in the piece — the
+ * credit line is shown so the connection is stated rather than implied.
+ */
 const pressCoverage = [
-  { title: "\"The Genre-Bending Sound of Yves Jones\"", publication: "MIXMAG", url: "#" },
-  { title: "\"10 UK Artists to Watch in 2026\"", publication: "DJ MAG", url: "#" },
-  { title: "\"Midnight Frequency Review: 8/10\"", publication: "CLASH", url: "#" },
+  {
+    title: "Antony Szmierek Releases New Single \u2018Rafters\u2019",
+    publication: "Clash",
+    date: "July 2024",
+    credit: "Produced by Yves Jones",
+    url: "https://www.clashmusic.com/news/antony-szmierek-releases-new-single-rafters/",
+  },
+  {
+    title: "Antony Szmierek has dropped his new single \u2018Rafters\u2019 ahead of sets at Truck and Latitude",
+    publication: "Dork",
+    date: "July 2024",
+    credit: "Produced by Yves Jones",
+    url: "https://readdork.com/news/antony-szmierek-rafters-single",
+  },
+  {
+    title: "Rising Manchester-Duo Fieves Share Highly Anticipated Debut EP \u201CBetween Hello & Goodbye\u201D",
+    publication: "Mixtape Madness",
+    date: "March 2024",
+    url: "https://www.mixtapemadness.com/blog/music/rising-manchester-duo-fieves-share-highly-anticipated-debut-ep-between-hello-goodbye",
+  },
+  {
+    title: "FIEVES * 2001",
+    publication: "Slanky",
+    date: "December 2023",
+    url: "https://www.slanky.co.uk/one-for-the-future-you-choose/fieves-2001",
+  },
+  {
+    title: "Million Faces (feat. Nyah Grace, Finnerz, Yves Jones)",
+    publication: "Stereofox",
+    date: "September 2023",
+    url: "https://www.stereofox.com/fieves-million-faces-feat-nyah-grace-ft-finnerz-yves-jones-nyah-grace/",
+  },
+  {
+    title: "Fieves \u2014 Loss Is Loss (Single)",
+    publication: "Wordplay Magazine",
+    date: "June 2023",
+    url: "https://www.wordplaymagazine.com/blog-1/2023/6/20/fieves-loss-is-loss-single",
+  },
+  {
+    title: "Fast Rising Manchester Duo Fieves Unveil Brand New Single \u2018Loss is Loss\u2019",
+    publication: "Mixtape Madness",
+    date: "June 2023",
+    url: "https://www.mixtapemadness.com/blog/news/fast-rising-manchester-duo-fieves-unveil-brand-new-single-loss-is-loss",
+  },
+  {
+    title: "Cigarette Stories",
+    publication: "The Pit",
+    date: "February 2022",
+    url: "https://www.thepitldn.com/pitnews/tag/Fieves",
+  },
 ];
 
 export default function PressPage() {
   const [copied, setCopied] = useState(false);
+  // Starts from the bundled figures so the panel is never blank, then takes
+  // whatever the admin dashboard has saved.
+  const [stats, setStats] = useState<PressStats>(defaultStats);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) setStats(data);
+      })
+      .catch(() => {
+        /* bundled defaults already rendered */
+      });
+  }, []);
 
   function copyBio() {
     navigator.clipboard.writeText(shortBio);
@@ -69,21 +131,29 @@ export default function PressPage() {
           {/* Press Shots Gallery */}
           <FadeIn delay={0.1}>
             <h3 className="display display-md mb-6">Press Shots</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-16">
+            {/* Columns rather than a grid: the shots mix portrait and
+                landscape, and masonry keeps them at their true aspect ratio
+                without cropping or ragged rows. */}
+            <div className="columns-2 md:columns-3 gap-4 mb-16 [column-fill:_balance]">
               {pressShots.map((photo) => (
                 <div
-                  key={photo.id}
-                  className={`bg-surface-light rounded-xl overflow-hidden relative group cursor-pointer ${
-                    photo.aspect === "portrait" ? "row-span-2" : ""
-                  }`}
+                  key={photo.src}
+                  className="mb-4 break-inside-avoid bg-surface-light rounded-xl overflow-hidden relative group"
                 >
-                  <div className={`${photo.aspect === "portrait" ? "aspect-[3/4]" : photo.aspect === "landscape" ? "aspect-video" : "aspect-square"} bg-accent/10 flex items-center justify-center`}>
-                    <span className="text-sm text-foreground/40">{photo.label}</span>
-                  </div>
+                  <img
+                    src={photo.src}
+                    alt={`Yves Jones press shot — ${photo.label.toLowerCase()}`}
+                    loading="lazy"
+                    className="w-full h-auto block"
+                  />
                   <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button className="pill-sm bg-foreground text-background">
+                    <a
+                      href={photo.src}
+                      download
+                      className="pill-sm bg-foreground text-background"
+                    >
                       <Download size={14} /> Download
-                    </button>
+                    </a>
                   </div>
                 </div>
               ))}
@@ -109,10 +179,12 @@ export default function PressPage() {
               <div className="bg-surface rounded-2xl hairline border p-8">
                 <h3 className="display display-sm mb-6">Key Stats</h3>
                 <div className="grid grid-cols-2 gap-6">
-                  {stats.map((stat) => (
-                    <div key={stat.label}>
-                      <div className="display display-md text-accent">{stat.value}</div>
-                      <div className="text-sm text-muted mt-1">{stat.label}</div>
+                  {statFields.map((field) => (
+                    <div key={field.key}>
+                      <div className="display display-md text-accent">
+                        {stats[field.key]}
+                      </div>
+                      <div className="text-sm text-muted mt-1">{field.label}</div>
                     </div>
                   ))}
                 </div>
@@ -128,11 +200,18 @@ export default function PressPage() {
                 <a
                   key={i}
                   href={article.url}
-                  className="flex items-center justify-between bg-surface rounded-xl hairline border p-6 hover:border-accent/50 transition-colors group"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-4 bg-surface rounded-xl hairline border p-6 hover:border-accent/50 transition-colors group"
                 >
                   <div>
                     <p className="display display-sm display-case group-hover:text-accent transition-colors">{article.title}</p>
-                    <p className="mono-label mt-2">{article.publication}</p>
+                    <p className="mono-label mt-2">
+                      {article.publication} &middot; {article.date}
+                    </p>
+                    {article.credit && (
+                      <p className="mono-readout mt-2">{article.credit}</p>
+                    )}
                   </div>
                   <ExternalLink size={18} className="text-muted group-hover:text-accent transition-colors shrink-0" />
                 </a>
