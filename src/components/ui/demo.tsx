@@ -1,15 +1,18 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import Link from "next/link";
-import { Play, ShoppingBag } from "lucide-react";
+import Ipod from "@/components/ipod/Ipod";
+import type { MenuEntry } from "@/components/ipod/Screen";
+import type { PlayerTrack } from "@/lib/itunes";
 
 /** Z distance between the stacked plates. Also set as each layer's resting
  *  transform in CSS — without that the stack sits flat until the first
  *  mousemove, which is what made the hero read as 2D on load. */
 const LAYER_GAP_PX = 45;
 
-const HalideLanding: React.FC = () => {
+const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
+  tracks = [],
+}) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const layersRef = useRef<HTMLDivElement[]>([]);
 
@@ -262,14 +265,28 @@ const HalideLanding: React.FC = () => {
               <p>[ ARCHIVE 2026 ]</p>
               <p>HIP-HOP / RAP &amp; ELECTRONIC DANCE</p>
             </div>
-            <div className="halide-cta-buttons" style={{ display: "flex", gap: "0.75rem", pointerEvents: "auto" }}>
-              <Link href="/music" className="halide-cta-button halide-cta-primary">
-                <Play size={16} /> Listen Now
-              </Link>
-              <Link href="/store" className="halide-cta-button halide-cta-secondary">
-                <ShoppingBag size={16} /> Buy Mixtapes
-              </Link>
-            </div>
+            {/* The iPod stands in for the old Listen Now button: people can
+                play something here instead of being sent to another page. */}
+            {tracks.length > 0 && (
+              <div
+                className="halide-cta-buttons"
+                style={{ pointerEvents: "auto" }}
+              >
+                <Ipod
+                  name="Yves Jones"
+                  menu={tracks.map((track, i) => ({
+                    label: track.title,
+                    marker: "note",
+                    action: "track" as const,
+                    trackIndex: i,
+                  }))}
+                  tracks={tracks}
+                  startInPlayer
+                  floating
+                  widthClass="w-[220px]"
+                />
+              </div>
+            )}
           </div>
         </div>
 

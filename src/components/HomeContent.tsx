@@ -8,14 +8,21 @@ import SubscribeForm from "@/components/SubscribeForm";
 import HalideLanding from "@/components/ui/demo";
 import { getFeaturedRelease, releaseCredit } from "@/data/releases";
 import type { Show } from "@/data/shows";
+import type { PlayerTrack } from "@/lib/itunes";
 
-export default function HomeContent({ nextShow }: { nextShow: Show | null }) {
+export default function HomeContent({
+  nextShow,
+  tracks,
+}: {
+  nextShow: Show | null;
+  tracks: PlayerTrack[];
+}) {
   const featured = getFeaturedRelease();
 
   return (
     <>
       {/* Hero Section */}
-      <HalideLanding />
+      <HalideLanding tracks={tracks} />
 
       <SpotifySection />
 
