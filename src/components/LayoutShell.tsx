@@ -6,9 +6,12 @@ import Footer from "@/components/Footer";
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith("/admin");
+  // /links is the Instagram bio page: no nav, no footer, nothing but the
+  // links themselves.
+  const isBare =
+    pathname.startsWith("/admin") || pathname.startsWith("/links");
 
-  if (isAdmin) {
+  if (isBare) {
     return <>{children}</>;
   }
 

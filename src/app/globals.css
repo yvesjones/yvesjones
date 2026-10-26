@@ -249,3 +249,70 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   z-index: 50;
 }
+
+/* ---------------------------------------------------------------------------
+   iPod (the /links bio page)
+
+   Scoped to .ipod-page so the device's cream palette never leaks into the
+   dark site around it. Sizes inside the device are proportional (%, clamp,
+   em) rather than fixed, so the whole thing scales from a 320px phone up to
+   a desktop without a second layout.
+   --------------------------------------------------------------------------- */
+.ipod-page {
+  background: #0A0A0A;
+}
+
+/* The palette lives on the device, not the page, so a second iPod dropped
+   into the dark home page carries its own colours with it. */
+.ipod-body {
+  /* Type inside is sized in cqw — a share of the device's own width — so the
+     same component reads correctly at 380px on the bio page and at 220px
+     floating in the home page hero. */
+  container-type: inline-size;
+  --ipod-body: #F2EFE6;
+  --ipod-body-edge: #DAD5C7;
+  --ipod-wheel: #EDEAE0;
+  --ipod-wheel-ink: #6B6558;
+  --ipod-centre: #F6F4EC;
+  --ipod-bezel: #2A2724;
+  --lcd: #B9B9B1;
+  --lcd-ink: #2A2724;
+  --lcd-bar: #3A3631;
+  --lcd-bar-ink: #F2EFE6;
+  background: linear-gradient(
+    180deg,
+    var(--ipod-body) 0%,
+    var(--ipod-body) 70%,
+    var(--ipod-body-edge) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
+.ipod-bezel {
+  background: var(--ipod-bezel);
+}
+
+/* The bitmap face, with a real fallback stack — a pixel font that fails to
+   load must not drop the menu to a serif. */
+.ipod-type {
+  font-family: var(--font-silkscreen), ui-monospace, "SFMono-Regular",
+    Menlo, monospace;
+  letter-spacing: 0.02em;
+}
+
+/* A slow hover for the home page's iPod, so it reads as floating over the
+   hero rather than sitting on it. */
+@keyframes ipod-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+.ipod-float {
+  animation: ipod-float 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ipod-float { animation: none; }
+}
