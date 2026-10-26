@@ -42,8 +42,8 @@ export const releases: Release[] = [
       { title: "Fade", duration: "2:34" },
     ],
     credits: "By Fieves, Yves Jones & Finnerz.",
-    spotifyUrl: "https://open.spotify.com/album/5QrlCLZeWlXmAUmRMpdervV",
-    spotifyEmbed: "https://open.spotify.com/embed/album/5QrlCLZeWlXmAUmRMpdervV",
+    spotifyUrl: "https://open.spotify.com/track/1K0ru8IJ1rf62dSSq9s7zC",
+    spotifyEmbed: "https://open.spotify.com/embed/track/1K0ru8IJ1rf62dSSq9s7zC",
     featured: true,
   },
   {
@@ -144,8 +144,8 @@ export const releases: Release[] = [
       { title: "Found My Way", duration: "3:10", featuring: "aya dia & 2b.Frank" },
     ],
     credits: "By aya dia, 2b.Frank & Yves Jones.",
-    spotifyUrl: "https://open.spotify.com/album/72vHXLUrZyiW1gJgP859aW",
-    spotifyEmbed: "https://open.spotify.com/embed/album/72vHXLUrZyiW1gJgP859aW",
+    spotifyUrl: "https://open.spotify.com/track/3LrWJYGeQHJD6uFCYVdfFZ",
+    spotifyEmbed: "https://open.spotify.com/embed/track/3LrWJYGeQHJD6uFCYVdfFZ",
   },
   {
     slug: "laidback",
