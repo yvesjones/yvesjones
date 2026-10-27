@@ -26,10 +26,24 @@ export const socials: SocialLink[] = [
     detail: "Fieves",
     url: spotifyArtistUrl(spotifyArtists[1].id),
   },
-  { label: "Instagram", detail: "", url: "" },
+  {
+    label: "Instagram",
+    detail: "@yvesjoness",
+    url: "https://www.instagram.com/yvesjoness/",
+  },
+  {
+    label: "SoundCloud",
+    detail: "yvesjones",
+    // The canonical profile, not the on.soundcloud.com share link: those
+    // carry tracking parameters and are not guaranteed to keep working.
+    url: "https://soundcloud.com/yvesjones",
+  },
+  {
+    label: "YouTube",
+    detail: "Yves Jones",
+    url: "https://www.youtube.com/channel/UCDQCIr2n_4wiZ1lAxoqIANg",
+  },
   { label: "TikTok", detail: "", url: "" },
-  { label: "YouTube", detail: "", url: "" },
-  { label: "SoundCloud", detail: "", url: "" },
   { label: "Apple Music", detail: "", url: "" },
 ];
 
