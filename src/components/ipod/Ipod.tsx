@@ -160,61 +160,61 @@ export default function Ipod({
 
   return (
     <div
-      className={`ipod-body mx-auto flex flex-col gap-[6%] rounded-[8%/4%] p-[6%] ${widthClass} ${
-        floating ? "ipod-float" : ""
-      }`}
+      className={`ipod-frame mx-auto ${widthClass} ${floating ? "ipod-float" : ""}`}
     >
-      <audio
-        ref={audioRef}
-        src={track?.preview}
-        preload="metadata"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => skip(1)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onDurationChange={(e) => setDuration(e.currentTarget.duration)}
-        onTimeUpdate={(e) => setPosition(e.currentTarget.currentTime)}
-      />
-
-      {/* The screen: 4:3, as the original was. */}
-      <div className="ipod-bezel rounded-[3%] p-[3.5%]">
-        <div className="aspect-[4/3] w-full overflow-hidden bg-[var(--lcd)]">
-          {view.kind === "menu" ? (
-            <MenuScreen
-              title={view.title}
-              entries={view.entries}
-              selected={cursor}
-              onPick={(i) => {
-                setCursors((c) => {
-                  const next = [...c];
-                  next[next.length - 1] = i;
-                  return next;
-                });
-                open(view.entries[i]);
-              }}
-            />
-          ) : (
-            <NowPlaying
-              track={track}
-              position={position}
-              duration={duration}
-              playing={playing}
-              index={trackIndex}
-              total={tracks.length}
-            />
-          )}
-        </div>
-      </div>
-
-      <div className="mx-auto w-[74%] py-[2%]">
-        <ClickWheel
-          onStep={step}
-          onSelect={select}
-          onMenu={back}
-          onPrev={() => skip(-1)}
-          onNext={() => skip(1)}
-          onPlayPause={togglePlay}
+      <div className="ipod-body flex w-full flex-col gap-[6cqw] rounded-[8%/4%] p-[6cqw]">
+        <audio
+          ref={audioRef}
+          src={track?.preview || undefined}
+          preload="metadata"
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={() => skip(1)}
+          onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+          onDurationChange={(e) => setDuration(e.currentTarget.duration)}
+          onTimeUpdate={(e) => setPosition(e.currentTarget.currentTime)}
         />
+
+        {/* The screen: 4:3, as the original was. */}
+        <div className="ipod-bezel rounded-[3%] p-[3.5%]">
+          <div className="aspect-[4/3] w-full overflow-hidden bg-[var(--lcd)]">
+            {view.kind === "menu" ? (
+              <MenuScreen
+                title={view.title}
+                entries={view.entries}
+                selected={cursor}
+                onPick={(i) => {
+                  setCursors((c) => {
+                    const next = [...c];
+                    next[next.length - 1] = i;
+                    return next;
+                  });
+                  open(view.entries[i]);
+                }}
+              />
+            ) : (
+              <NowPlaying
+                track={track}
+                position={position}
+                duration={duration}
+                playing={playing}
+                index={trackIndex}
+                total={tracks.length}
+              />
+            )}
+          </div>
+        </div>
+
+        <div className="mx-auto w-[74%] py-[2%]">
+          <ClickWheel
+            onStep={step}
+            onSelect={select}
+            onMenu={back}
+            onPrev={() => skip(-1)}
+            onNext={() => skip(1)}
+            onPlayPause={togglePlay}
+          />
+        </div>
       </div>
     </div>
   );

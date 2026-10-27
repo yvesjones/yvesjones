@@ -264,11 +264,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* The palette lives on the device, not the page, so a second iPod dropped
    into the dark home page carries its own colours with it. */
-.ipod-body {
-  /* Type inside is sized in cqw — a share of the device's own width — so the
-     same component reads correctly at 380px on the bio page and at 220px
-     floating in the home page hero. */
+/* The device's sizing context. Everything inside is measured in cqw — a share
+   of the device's own width — so the same component reads correctly at any
+   size, and its padding no longer depends on how wide its parent happens to
+   be (percentage padding resolves against the parent, which crushed the
+   screen wherever the parent was wider than the device). */
+.ipod-frame {
   container-type: inline-size;
+}
+
+.ipod-body {
   --ipod-body: #F2EFE6;
   --ipod-body-edge: #DAD5C7;
   --ipod-wheel: #EDEAE0;
