@@ -150,12 +150,14 @@ export function NowPlaying({
     <div className="flex h-full flex-col">
       <TitleBar title={playing ? "Now Playing" : "Paused"} />
       <div className="flex min-h-0 flex-1 gap-3 p-3 text-[var(--lcd-ink)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={track.artwork}
-          alt=""
-          className="aspect-square h-auto w-[38%] shrink-0 self-start border border-[var(--lcd-ink)]/30 object-cover"
-        />
+        {track.artwork && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={track.artwork}
+            alt=""
+            className="aspect-square h-auto w-[38%] shrink-0 self-start border border-[var(--lcd-ink)]/30 object-cover"
+          />
+        )}
         <div className="ipod-type flex min-w-0 flex-1 flex-col justify-center gap-[0.35em] text-[clamp(7px,3.5cqw,14px)]">
           <p className="truncate">{track.title}</p>
           <p className="truncate opacity-70">{track.artist}</p>
