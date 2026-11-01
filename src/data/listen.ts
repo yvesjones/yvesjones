@@ -41,7 +41,7 @@ export const listenLinks: ListenLink[] = [
 ];
 
 /**
- * The photography site. No domain yet — leave empty and the row shows as not
- * live rather than linking nowhere. Fill this in once it is deployed.
+ * The photography site. Empty would show the row as not yet live rather than
+ * linking nowhere; it is deployed now, so the row is a link.
  */
-export const PHOTOGRAPHY_URL = "";
+export const PHOTOGRAPHY_URL = "https://yjjpeg.co.uk";
