@@ -20,46 +20,60 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Mouse Parallax Logic
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (window.innerWidth / 2 - e.pageX) / 25;
-      const y = (window.innerHeight / 2 - e.pageY) / 25;
-
-      // Rotate the 3D Canvas
+    /**
+     * The hero is the same tilted plane everywhere. Only what drives it
+     * differs: a cursor where there is one, the scroll position where there
+     * is not — a phone has nothing else to aim with.
+     */
+    const apply = (x: number, y: number) => {
       canvas.style.transform = `rotateX(${55 + y / 2}deg) rotateZ(${-25 + x / 2}deg)`;
-
-      // Apply depth shift to layers
       layersRef.current.forEach((layer, index) => {
         if (!layer) return;
         const depth = (index + 1) * LAYER_GAP_PX;
-        const moveX = x * (index + 1) * 0.5;
-        const moveY = y * (index + 1) * 0.5;
-        layer.style.transform = `translateZ(${depth}px) translate(${moveX}px, ${moveY}px)`;
+        layer.style.transform =
+          `translateZ(${depth}px) translate(${x * (index + 1) * 0.5}px, ${y * (index + 1) * 0.5}px)`;
       });
     };
 
-    // The tilt is a pointer effect, and a phone has no pointer. It is held
-    // flat there instead: a plane rotated 55 degrees reads as depth beside a
-    // cursor, but on a narrow screen it is a skewed smear that spills past
-    // the viewport. iOS also synthesises mousemove on touch, so the first
-    // scroll fired the parallax and snapped the hero to a new angle — the
-    // jump that looked like a bug because it was one.
-    const pointerDevice = window.matchMedia(
-      "(min-width: 769px) and (hover: hover)",
-    );
+    const handleMouseMove = (e: MouseEvent) => {
+      apply(
+        (window.innerWidth / 2 - e.pageX) / 25,
+        (window.innerHeight / 2 - e.pageY) / 25,
+      );
+    };
+
+    // Scrolling past the hero sweeps the same range the cursor would, so the
+    // plane turns as the page moves. Read in a frame callback because scroll
+    // fires far faster than the screen refreshes.
+    let frame = 0;
+    const handleScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const travel = window.innerHeight;
+        const progress = Math.min(Math.max(window.scrollY / travel, 0), 1);
+        apply(0, (0.5 - progress) * 30);
+      });
+    };
+
+    /**
+     * iOS synthesises mousemove on touch, so without this the first scroll
+     * fired the cursor handler and snapped the hero to a new angle.
+     */
+    const pointerDevice = window.matchMedia("(hover: hover)");
 
     let timeout: ReturnType<typeof setTimeout> | undefined;
 
-    const flatten = () => {
-      canvas.style.transition = "none";
-      canvas.style.opacity = "1";
-      canvas.style.transform = "none";
-      layersRef.current.forEach((layer) => {
-        if (layer) layer.style.transform = "translateZ(0) translate(0, 0)";
-      });
+    const detach = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
     };
 
-    const animateIn = () => {
+    const sync = () => {
+      detach();
+      if (timeout) clearTimeout(timeout);
+
+      // Entrance animation, the same on both.
       canvas.style.opacity = "0";
       canvas.style.transform = "rotateX(90deg) rotateZ(0deg) scale(0.8)";
       timeout = setTimeout(() => {
@@ -67,16 +81,12 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
         canvas.style.opacity = "1";
         canvas.style.transform = "rotateX(55deg) rotateZ(-25deg) scale(1)";
       }, 300);
-    };
 
-    const sync = () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      if (timeout) clearTimeout(timeout);
       if (pointerDevice.matches) {
-        animateIn();
         window.addEventListener("mousemove", handleMouseMove);
       } else {
-        flatten();
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        handleScroll();
       }
     };
 
@@ -85,7 +95,8 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
 
     return () => {
       pointerDevice.removeEventListener("change", sync);
-      window.removeEventListener("mousemove", handleMouseMove);
+      detach();
+      if (frame) cancelAnimationFrame(frame);
       if (timeout) clearTimeout(timeout);
     };
   }, []);
