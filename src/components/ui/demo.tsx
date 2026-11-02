@@ -38,21 +38,55 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
       });
     };
 
-    // Entrance Animation
-    canvas.style.opacity = "0";
-    canvas.style.transform = "rotateX(90deg) rotateZ(0deg) scale(0.8)";
+    // The tilt is a pointer effect, and a phone has no pointer. It is held
+    // flat there instead: a plane rotated 55 degrees reads as depth beside a
+    // cursor, but on a narrow screen it is a skewed smear that spills past
+    // the viewport. iOS also synthesises mousemove on touch, so the first
+    // scroll fired the parallax and snapped the hero to a new angle — the
+    // jump that looked like a bug because it was one.
+    const pointerDevice = window.matchMedia(
+      "(min-width: 769px) and (hover: hover)",
+    );
 
-    const timeout = setTimeout(() => {
-      canvas.style.transition = "all 2.5s cubic-bezier(0.16, 1, 0.3, 1)";
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+
+    const flatten = () => {
+      canvas.style.transition = "none";
       canvas.style.opacity = "1";
-      canvas.style.transform = "rotateX(55deg) rotateZ(-25deg) scale(1)";
-    }, 300);
+      canvas.style.transform = "none";
+      layersRef.current.forEach((layer) => {
+        if (layer) layer.style.transform = "translateZ(0) translate(0, 0)";
+      });
+    };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    const animateIn = () => {
+      canvas.style.opacity = "0";
+      canvas.style.transform = "rotateX(90deg) rotateZ(0deg) scale(0.8)";
+      timeout = setTimeout(() => {
+        canvas.style.transition = "all 2.5s cubic-bezier(0.16, 1, 0.3, 1)";
+        canvas.style.opacity = "1";
+        canvas.style.transform = "rotateX(55deg) rotateZ(-25deg) scale(1)";
+      }, 300);
+    };
+
+    const sync = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (timeout) clearTimeout(timeout);
+      if (pointerDevice.matches) {
+        animateIn();
+        window.addEventListener("mousemove", handleMouseMove);
+      } else {
+        flatten();
+      }
+    };
+
+    sync();
+    pointerDevice.addEventListener("change", sync);
 
     return () => {
+      pointerDevice.removeEventListener("change", sync);
       window.removeEventListener("mousemove", handleMouseMove);
-      clearTimeout(timeout);
+      if (timeout) clearTimeout(timeout);
     };
   }, []);
 
@@ -225,8 +259,8 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
             padding: 1.5rem;
           }
           .canvas-3d {
-            width: 400px;
-            height: 300px;
+            width: min(100%, 360px);
+            height: 240px;
           }
           .halide-hero-title {
             font-size: clamp(2.5rem, 12vw, 5rem);

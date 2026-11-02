@@ -44,6 +44,8 @@ export default async function LinksPage() {
           external: true,
         }
       : { label: "Look and Listen", marker: "Soon", action: "none" },
+    // The full site, for anyone who arrives here from a bio link first.
+    { label: "Website", marker: "chevron", action: "link", href: "/" },
     {
       label: "Socials",
       marker: "chevron",

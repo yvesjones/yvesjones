@@ -321,3 +321,11 @@ h1, h2, h3, h4, h5, h6 {
 @media (prefers-reduced-motion: reduce) {
   .ipod-float { animation: none; }
 }
+
+/* The hero's layers are 3D-transformed, and a 3D-transformed box is not
+   contained by an ancestor's overflow — they spilled past the viewport and
+   left the page pannable sideways on a phone. `clip` rather than `hidden`:
+   hidden would make this a scroll container and break sticky positioning. */
+html {
+  overflow-x: clip;
+}
