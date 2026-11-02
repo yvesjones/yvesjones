@@ -26,13 +26,24 @@ const silkscreen = Silkscreen({
 });
 
 export const metadata: Metadata = {
-  title: "Yves Jones | Hip-Hop & Electronic Dance Artist",
+  title: "Yves Jones | Multi-Genre Artist & Producer",
   description:
-    "Official website of Yves Jones. Stream music, buy exclusive mixtapes, check upcoming shows, and download press materials.",
-  keywords: ["Yves Jones", "Hip-Hop", "Rap", "Electronic Dance", "EDM", "UK Drill", "House", "DnB"],
+    "Manchester-based multi-genre artist and producer, 1/2 of Fieves. Alternative hip-hop, soul, electronic and experimental music, with production credits including Antony Szmierek's \u201CRafters\u201D.",
+  keywords: [
+    "Yves Jones",
+    "Fieves",
+    "Manchester",
+    "alternative hip-hop",
+    "soul",
+    "electronic",
+    "experimental",
+    "producer",
+    "songwriter",
+  ],
   openGraph: {
-    title: "Yves Jones | Hip-Hop & Electronic Dance Artist",
-    description: "Stream music, buy exclusive mixtapes, and check upcoming shows.",
+    title: "Yves Jones | Multi-Genre Artist & Producer",
+    description:
+      "Manchester-based multi-genre artist and producer, 1/2 of Fieves. Over 10 million streams, with radio support from BBC Radio 1 and 6 Music.",
     type: "website",
   },
 };

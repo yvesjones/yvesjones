@@ -263,7 +263,7 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
           <div className="halide-cta-row">
             <div className="mono-label">
               <p>[ ARCHIVE 2026 ]</p>
-              <p>HIP-HOP / RAP &amp; ELECTRONIC DANCE</p>
+              <p>MULTI-GENRE ARTIST &amp; PRODUCER</p>
             </div>
             {/* The iPod stands in for the old Listen Now button: people can
                 play something here instead of being sent to another page. */}

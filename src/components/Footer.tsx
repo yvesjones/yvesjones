@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <h3 className="display display-sm mb-4">Yves Jones</h3>
             <p className="mono text-xs text-muted leading-relaxed">
-              Hip-Hop / Rap &amp; Electronic Dance artist. London-based producer and performer.
+              Manchester-based artist and producer, 1/2 of Fieves. Alternative hip-hop, soul, electronic and experimental.
             </p>
           </div>
           <div>
