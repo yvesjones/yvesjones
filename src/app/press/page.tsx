@@ -119,12 +119,16 @@ export default function PressPage() {
               <div>
                 <h3 className="display display-sm">Download Press Kit</h3>
                 <p className="text-muted text-sm mt-1">
-                  Includes bio, high-res press shots, logos, and tech rider. ZIP format.
+                  Includes bio and high-res press shots. ZIP format.
                 </p>
               </div>
-              <button className="pill pill-primary shrink-0">
+              <a
+                href="/api/press-kit"
+                download
+                className="pill pill-primary shrink-0"
+              >
                 <Download size={18} /> Download Press Kit
-              </button>
+              </a>
             </div>
           </FadeIn>
 
