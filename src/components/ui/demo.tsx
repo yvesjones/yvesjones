@@ -100,32 +100,47 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
 
       tracking = false;
       seatLayers();
-      canvas.style.opacity = "0";
-      canvas.style.transition = "none";
-      canvas.style.transform = "rotateX(90deg) rotateZ(0deg) scale(0.8)";
-
-      entrance = setTimeout(() => {
-        canvas.style.transition = `all ${ENTRANCE_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`;
-        canvas.style.opacity = "1";
-        canvas.style.transform = REST;
-
-        // The transition has to go once it has played, or every later move
-        // would ease over two and a half seconds instead of tracking the
-        // input — which read as the hero lurching rather than following.
-        settle = setTimeout(() => {
-          // A short transition stays on rather than none at all. If the
-          // device ends the entrance somewhere unexpected — a dropped
-          // animation, a restored page — the correction glides instead of
-          // snapping, and 120ms is too brief to feel like lag when tracking.
-          canvas.style.transition = "transform 120ms linear";
-          tracking = true;
-          if (!pointerDevice.matches) handleScroll();
-        }, ENTRANCE_MS);
-      }, 300);
 
       if (pointerDevice.matches) {
+        // The unfolding entrance, which needs a long transform transition to
+        // read as anything but a snap.
+        canvas.style.opacity = "0";
+        canvas.style.transition = "none";
+        canvas.style.transform = "rotateX(90deg) rotateZ(0deg) scale(0.8)";
+
+        entrance = setTimeout(() => {
+          canvas.style.transition = `all ${ENTRANCE_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`;
+          canvas.style.opacity = "1";
+          canvas.style.transform = REST;
+
+          settle = setTimeout(() => {
+            // Kept short rather than removed: the cursor then glides rather
+            // than snapping, and 120ms is too brief to feel like lag.
+            canvas.style.transition = "transform 120ms linear";
+            tracking = true;
+          }, ENTRANCE_MS);
+        }, 300);
+
         window.addEventListener("mousemove", handleMouseMove);
       } else {
+        // No entrance on touch. That animation does not play on iOS — the
+        // plane held at rotateX(90deg) scale(0.8), squashed and edge-on, and
+        // then snapped upright the moment tracking wrote the rest angle.
+        // Starting at rest removes the whole problem: the hero is simply
+        // there, correct from the first frame, and scroll turns it.
+        canvas.style.transition = "none";
+        canvas.style.transform = REST;
+        canvas.style.opacity = "0";
+        tracking = true;
+        handleScroll();
+
+        // A plain fade, so it arrives rather than popping. Opacity only —
+        // nothing about the shape moves.
+        requestAnimationFrame(() => {
+          canvas.style.transition = "opacity 400ms ease-out, transform 120ms linear";
+          canvas.style.opacity = "1";
+        });
+
         window.addEventListener("scroll", handleScroll, { passive: true });
       }
     };
