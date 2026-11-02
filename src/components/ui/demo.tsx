@@ -63,14 +63,15 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
     // Scrolling past the hero sweeps the same range the cursor would. Read in
     // a frame callback, since scroll fires far faster than the screen redraws.
     let frame = 0;
+    // Measured once. Safari collapses its address bar as you scroll, which
+    // changes innerHeight mid-gesture — reading it live moves the goalposts
+    // under the finger and shows up as a lurch.
+    let travel = window.innerHeight;
     const handleScroll = () => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
-        const progress = Math.min(
-          Math.max(window.scrollY / window.innerHeight, 0),
-          1,
-        );
+        const progress = Math.min(Math.max(window.scrollY / travel, 0), 1);
         // Zero at the top of the page, so taking over from the entrance is
         // continuous: the rest angle is rotateX(55deg), and y must be 0 there
         // or the plate snaps the moment tracking begins.
@@ -112,7 +113,11 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
         // would ease over two and a half seconds instead of tracking the
         // input — which read as the hero lurching rather than following.
         settle = setTimeout(() => {
-          canvas.style.transition = "none";
+          // A short transition stays on rather than none at all. If the
+          // device ends the entrance somewhere unexpected — a dropped
+          // animation, a restored page — the correction glides instead of
+          // snapping, and 120ms is too brief to feel like lag when tracking.
+          canvas.style.transition = "transform 120ms linear";
           tracking = true;
           if (!pointerDevice.matches) handleScroll();
         }, ENTRANCE_MS);
@@ -125,11 +130,17 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
       }
     };
 
+    const onResize = () => {
+      travel = window.innerHeight;
+    };
+
     sync();
     pointerDevice.addEventListener("change", sync);
+    window.addEventListener("orientationchange", onResize);
 
     return () => {
       pointerDevice.removeEventListener("change", sync);
+      window.removeEventListener("orientationchange", onResize);
       detach();
       if (frame) cancelAnimationFrame(frame);
       if (entrance) clearTimeout(entrance);
