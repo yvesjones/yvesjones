@@ -2,13 +2,12 @@
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Send, Instagram, Twitter, Youtube, Music } from "lucide-react";
+import { Send, Instagram, Youtube, Music } from "lucide-react";
 import FadeIn from "@/components/FadeIn";
 import PageHero from "@/components/PageHero";
 
 const socials = [
   { name: "Instagram", icon: Instagram, url: "#" },
-  { name: "Twitter / X", icon: Twitter, url: "#" },
   { name: "YouTube", icon: Youtube, url: "#" },
   { name: "SoundCloud", icon: Music, url: "#" },
 ];

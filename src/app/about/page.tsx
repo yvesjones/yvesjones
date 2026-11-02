@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Instagram, Twitter, Youtube, Music, Copy, Check } from "lucide-react";
+import { Instagram, Youtube, Music, Copy, Check } from "lucide-react";
 import FadeIn from "@/components/FadeIn";
 import PageHero from "@/components/PageHero";
 import { bioParagraphs, shortBio } from "@/data/bio";
 
 const socials = [
   { name: "Instagram", icon: Instagram, url: "#" },
-  { name: "Twitter / X", icon: Twitter, url: "#" },
   { name: "YouTube", icon: Youtube, url: "#" },
   { name: "SoundCloud", icon: Music, url: "#" },
 ];

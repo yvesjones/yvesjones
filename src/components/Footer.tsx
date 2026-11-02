@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Instagram, Youtube, Music, Twitter } from "lucide-react";
+import { Instagram, Youtube, Music } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -16,7 +16,6 @@ export default function Footer() {
             <h4 className="mono-eyebrow mb-4">Links</h4>
             <div className="flex flex-col gap-2">
               <Link href="/music" className="mono-label hover:text-foreground transition-colors">Music</Link>
-              <Link href="/store" className="mono-label hover:text-foreground transition-colors">Store</Link>
               <Link href="/shows" className="mono-label hover:text-foreground transition-colors">Shows</Link>
               <Link href="/press" className="mono-label hover:text-foreground transition-colors">Press</Link>
               <Link href="/contact" className="mono-label hover:text-foreground transition-colors">Contact</Link>
@@ -27,9 +26,6 @@ export default function Footer() {
             <div className="flex items-center gap-4">
               <a href="#" aria-label="Instagram" className="text-muted hover:text-accent transition-colors">
                 <Instagram size={20} />
-              </a>
-              <a href="#" aria-label="Twitter" className="text-muted hover:text-accent transition-colors">
-                <Twitter size={20} />
               </a>
               <a href="#" aria-label="YouTube" className="text-muted hover:text-accent transition-colors">
                 <Youtube size={20} />
