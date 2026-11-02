@@ -71,7 +71,10 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
           Math.max(window.scrollY / window.innerHeight, 0),
           1,
         );
-        apply(0, (0.5 - progress) * 30);
+        // Zero at the top of the page, so taking over from the entrance is
+        // continuous: the rest angle is rotateX(55deg), and y must be 0 there
+        // or the plate snaps the moment tracking begins.
+        apply(0, -progress * 30);
       });
     };
 
