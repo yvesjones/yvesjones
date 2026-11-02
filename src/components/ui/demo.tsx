@@ -10,6 +10,9 @@ import type { PlayerTrack } from "@/lib/itunes";
  *  mousemove, which is what made the hero read as 2D on load. */
 const LAYER_GAP_PX = 45;
 
+/** The width the gap above was judged against, so it can scale with the box. */
+const DESIGN_CANVAS_PX = 800;
+
 const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
   tracks = [],
 }) => {
@@ -28,11 +31,19 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
      * animates in. Only the sideways drift waits for input.
      */
     const seatLayers = (x = 0, y = 0) => {
+      // The gap is proportional to the canvas, not a fixed distance. 45px
+      // between plates reads correctly across 800px of desktop; on a 360px
+      // phone the same absolute depth is more than twice the share of the
+      // box, which is why the plates looked flung apart.
+      const ratio = (canvas.offsetWidth || DESIGN_CANVAS_PX) / DESIGN_CANVAS_PX;
+      const gap = LAYER_GAP_PX * ratio;
+
       layersRef.current.forEach((layer, index) => {
         if (!layer) return;
-        const depth = (index + 1) * LAYER_GAP_PX;
+        const depth = (index + 1) * gap;
+        const drift = (index + 1) * 0.5 * ratio;
         layer.style.transform =
-          `translateZ(${depth}px) translate(${x * (index + 1) * 0.5}px, ${y * (index + 1) * 0.5}px)`;
+          `translateZ(${depth}px) translate(${x * drift}px, ${y * drift}px)`;
       });
     };
 
