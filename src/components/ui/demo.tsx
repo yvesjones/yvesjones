@@ -20,19 +20,37 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const ENTRANCE_MS = 2500;
+    const REST = "rotateX(55deg) rotateZ(-25deg) scale(1)";
+
     /**
-     * The hero is the same tilted plane everywhere. Only what drives it
-     * differs: a cursor where there is one, the scroll position where there
-     * is not — a phone has nothing else to aim with.
+     * Depth is applied up front so the plates are separated while the hero
+     * animates in. Only the sideways drift waits for input.
      */
-    const apply = (x: number, y: number) => {
-      canvas.style.transform = `rotateX(${55 + y / 2}deg) rotateZ(${-25 + x / 2}deg)`;
+    const seatLayers = (x = 0, y = 0) => {
       layersRef.current.forEach((layer, index) => {
         if (!layer) return;
         const depth = (index + 1) * LAYER_GAP_PX;
         layer.style.transform =
           `translateZ(${depth}px) translate(${x * (index + 1) * 0.5}px, ${y * (index + 1) * 0.5}px)`;
       });
+    };
+
+    /**
+     * The hero is the same tilted plane everywhere. Only what drives it
+     * differs: a cursor where there is one, the scroll position where there
+     * is not — a phone has nothing else to aim with.
+     *
+     * Ignored until the entrance has finished, or the first event would
+     * overwrite the angle it is animating from and the plate would snap
+     * flat before swinging back.
+     */
+    let tracking = false;
+
+    const apply = (x: number, y: number) => {
+      if (!tracking) return;
+      canvas.style.transform = `rotateX(${55 + y / 2}deg) rotateZ(${-25 + x / 2}deg)`;
+      seatLayers(x, y);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -42,27 +60,29 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
       );
     };
 
-    // Scrolling past the hero sweeps the same range the cursor would, so the
-    // plane turns as the page moves. Read in a frame callback because scroll
-    // fires far faster than the screen refreshes.
+    // Scrolling past the hero sweeps the same range the cursor would. Read in
+    // a frame callback, since scroll fires far faster than the screen redraws.
     let frame = 0;
     const handleScroll = () => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
-        const travel = window.innerHeight;
-        const progress = Math.min(Math.max(window.scrollY / travel, 0), 1);
+        const progress = Math.min(
+          Math.max(window.scrollY / window.innerHeight, 0),
+          1,
+        );
         apply(0, (0.5 - progress) * 30);
       });
     };
 
     /**
      * iOS synthesises mousemove on touch, so without this the first scroll
-     * fired the cursor handler and snapped the hero to a new angle.
+     * would fire the cursor handler and throw the hero to a stray angle.
      */
     const pointerDevice = window.matchMedia("(hover: hover)");
 
-    let timeout: ReturnType<typeof setTimeout> | undefined;
+    let entrance: ReturnType<typeof setTimeout> | undefined;
+    let settle: ReturnType<typeof setTimeout> | undefined;
 
     const detach = () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -71,22 +91,34 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
 
     const sync = () => {
       detach();
-      if (timeout) clearTimeout(timeout);
+      if (entrance) clearTimeout(entrance);
+      if (settle) clearTimeout(settle);
 
-      // Entrance animation, the same on both.
+      tracking = false;
+      seatLayers();
       canvas.style.opacity = "0";
+      canvas.style.transition = "none";
       canvas.style.transform = "rotateX(90deg) rotateZ(0deg) scale(0.8)";
-      timeout = setTimeout(() => {
-        canvas.style.transition = "all 2.5s cubic-bezier(0.16, 1, 0.3, 1)";
+
+      entrance = setTimeout(() => {
+        canvas.style.transition = `all ${ENTRANCE_MS}ms cubic-bezier(0.16, 1, 0.3, 1)`;
         canvas.style.opacity = "1";
-        canvas.style.transform = "rotateX(55deg) rotateZ(-25deg) scale(1)";
+        canvas.style.transform = REST;
+
+        // The transition has to go once it has played, or every later move
+        // would ease over two and a half seconds instead of tracking the
+        // input — which read as the hero lurching rather than following.
+        settle = setTimeout(() => {
+          canvas.style.transition = "none";
+          tracking = true;
+          if (!pointerDevice.matches) handleScroll();
+        }, ENTRANCE_MS);
       }, 300);
 
       if (pointerDevice.matches) {
         window.addEventListener("mousemove", handleMouseMove);
       } else {
         window.addEventListener("scroll", handleScroll, { passive: true });
-        handleScroll();
       }
     };
 
@@ -97,7 +129,8 @@ const HalideLanding: React.FC<{ tracks?: PlayerTrack[] }> = ({
       pointerDevice.removeEventListener("change", sync);
       detach();
       if (frame) cancelAnimationFrame(frame);
-      if (timeout) clearTimeout(timeout);
+      if (entrance) clearTimeout(entrance);
+      if (settle) clearTimeout(settle);
     };
   }, []);
 
